@@ -1,0 +1,590 @@
+/* ═══════════════════════════════════════════════════════════════
+   tkachenko.design — портфоліо
+   Усі міри взяті з автолеяутів Figma:
+     десктоп — фрейми main і case (1512px),
+     мобайл  — фрейми main-mob і case-mob (400px).
+   Біля чисел у дужках — назва вузла в макеті, звідки воно.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ── Шрифт ──
+   Той самий варіативний файл, що й у магазині: одна вісь ваги 100–700,
+   тож Regular = 400, Medium = 500, Bold = 700 — усе справжні ваги. */
+@font-face {
+    font-family: 'GruntGrotesk';
+    src: url('../fonts/GruntGroteskVF.woff2') format('woff2');   /* як у магазині: static/css → ../fonts */
+    font-weight: 100 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    /* Два набори стилістичних альтернатив — у макеті вони різні:
+       вкладки й футер — без ss02, тексти кейсу — з ss02 і без calt. */
+    --ff-ui:   "ss01" 1, "liga" 0;
+    --ff-text: "ss01" 1, "ss02" 1, "liga" 0, "calt" 0;
+
+    /* ── Десктоп (main / case, 1512) ── */
+    --tab-h: 30px;          /* висота вкладки (Frame 140 / 141) */
+    --tab-px: 10px;         /* внутрішній відступ вкладки (p-10) */
+    --tab-r: 10px;          /* скруглення вкладки */
+    --tab-fs: 15px;         /* кегль вкладок і футера */
+
+    --edge: 10px;           /* поле хедера й футера від краю (px-10) */
+
+    /* Сторінка кейсу: About case і Credits стоять на одній сітці —
+       4 колонки по 328 з кроком 40 і полями 40 (1512 = 40 + 4×328 + 3×40 + 40). */
+    --grid-pad: 40px;       /* About case / Credits: p-40 */
+    --grid-gap: 40px;       /* крок між колонками (і між рядами команд) */
+    --label-gap: 40px;      /* Frame 182/183/184: підпис → вміст (y 0 → 50, підпис 10) */
+    --col-gap: 30px;        /* Frame 179/180: назва команди → список ролей (y 0 → 48, назва 18) */
+
+    --gallery-pad: 10px;    /* поля галереї ліворуч і праворуч */
+    --gallery-gap: 10px;    /* проміжок між картинками — і згори вниз, і в ряду */
+
+    /* Групи з підписом — фрейми case-logo / case-logo-mob */
+    --group-ratio: 740 / 500;   /* картинки в групах (picture1/2) */
+    --group-cap-top: 40px;      /* від картинок до підпису */
+    --group-cap-bottom: 40px;   /* від підпису до лінії наступного блоку */
+    --group-line-gap: 10px;     /* лінія: 10 над нею і 10 під нею (Frame 185/186) */
+    --group-line: 1px;          /* товщина лінії */
+    --group-text-gap: 40px;     /* назва → опис, коли вони одне під одним (мобайл) */
+    --group-para-gap: 10px;     /* між абзацами опису групи */
+    --service-gap: 6px;         /* між плашками Services */
+
+    /* Кеглі вирахувані з висот текстових блоків макета (великі літери
+       шрифту — 0.733 кегля) — звірте з Figma й поправте тут, якщо треба. */
+    --label-fs: 14px;       /* підписи About / With / Services (висота 10) */
+    --lead-fs: 18px;        /* опис проєкту (6 рядків = 138) */
+    --lead-lh: 1.4;
+    --big-fs: 24px;         /* With, Services і назви команд (1 рядок 18, 2 рядки 54) */
+    --big-lh: 1.5;
+    --credits-fs: 14px;     /* список ролей (6 рядків = 110 → рядок 20) */
+    --credits-lh: 1.43;
+
+    --socials-gap: 10px;    /* Frame 177: gap-10 */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    font-family: 'GruntGrotesk', sans-serif;
+    font-weight: 400;
+    font-feature-settings: var(--ff-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: inherit; text-decoration: none; }
+
+img, video { display: block; }
+
+/* Видимий фокус для клавіатури (Tab). На мишу не впливає. */
+a:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+}
+
+/* Обрізання тексту до великої літери й базової лінії (text-box-trim у Figma).
+   Саме від цих країв рахуються всі відступи в макеті, тому без нього
+   відступи між назвою й описом на екрані виглядали б більшими.
+   Працює в Chrome/Edge/Safari; де не підтримується — відступи трохи ширші. */
+.trim {
+    display: block;
+    text-box: trim-both cap alphabetic;
+}
+
+
+/* ═══ ВКЛАДКИ ═══
+   Чорні й білі «язички» висотою 30px. У хедері звисають з верхнього краю
+   (скруглені лише нижні кути), на обкладинці кейсу стоять на нижньому
+   (скруглені лише верхні). Стоять впритул, без проміжку. */
+.tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: var(--tab-h);
+    padding: 0 var(--tab-px);
+    font-size: var(--tab-fs);
+    line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tab--top    { border-radius: 0 0 var(--tab-r) var(--tab-r); }  /* rounded-bl/br-10 */
+.tab--bottom { border-radius: var(--tab-r) var(--tab-r) 0 0; }  /* rounded-tl/tr-10 */
+
+.tab--dark  { background: #000; color: #fff; }
+.tab--light { background: #fff; color: #000; }
+
+.tab--bold  { font-weight: 700; }
+
+/* «→ type.tkachenko.design»: Regular, підкреслене, трекінг -0.01em
+   (15px / -0.15px на десктопі, 12px / -0.12px на мобайлі) */
+.tab--link {
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+
+/* Знак — частина логотипу й водночас посилання на головну. Вкладка 40 × 30. */
+.tab--sign { width: 40px; }
+.tab--sign img {
+    height: 17px;       /* Isolation_Mode: 18.06 × 17 */
+    width: auto;
+}
+
+/* Нагорода: біла вкладка, Regular, іконка 20px; [акцент] у підписі — колір нагороди.
+   Колір задається на класі award--<ключ> (ключ — перше слово підпису, малими). */
+.tab--award {
+    gap: 6px;
+    padding: 0 7px 0 6px;
+    font-weight: 400;
+}
+.tab--award img { width: 20px; height: 20px; }
+.award-accent  { color: var(--award-accent, currentColor); }
+.award--reddot { --award-accent: #e0001b; }
+
+/* Повна адреса магазину — на десктопі, коротка «→ type» — на мобайлі */
+.short { display: none; }
+
+
+/* ═══ ХЕДЕР ═══
+   Пливе над контентом при скролі й лежить поверх першої обкладинки.
+   Сама смуга прозора — видно лише вкладки. Тому вона НЕ ловить кліки
+   (pointer-events: none): інакше верхні 30px обкладинки не клікались би.
+   Кліки приймають тільки самі вкладки. */
+.hdr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    height: var(--tab-h);
+    padding: 0 var(--edge);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    pointer-events: none;
+}
+.hdr .tab { pointer-events: auto; }
+
+/* Ліва група — 655px (Frame 153). Разом зі space-between саме вона
+   визначає, де стане назва кейсу посередині: на 1512px це рівно
+   x = 947.5, як у макеті. На вужчих екранах група може стиснутись,
+   але не менше за свої вкладки — тоді назва кейсу не наїде на логотип. */
+.hdr-left  {
+    display: flex;
+    align-items: center;
+    flex: 0 1 655px;
+    min-width: max-content;
+}
+.hdr-mid   { display: flex; align-items: center; }
+.hdr-right { display: flex; align-items: center; justify-content: flex-end; }
+
+
+/* ═══ ГОЛОВНА: КЕЙСИ ═══
+   Кожен кейс — обкладинка на всю ширину у фіксованому блоці:
+   на десктопі в пропорції 1512 × 770, на мобайлі висотою 270.68.
+   Картинка іншої пропорції обріжеться по центру — так обкладинки
+   завжди однакові. */
+.case {
+    position: relative;
+}
+.case-link { display: block; }
+
+/* Нагороди на обкладинці: по нижньому краю ліворуч, з полем 50 — дзеркально до назви */
+.case-awards {
+    position: absolute;
+    left: 50px;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+}
+
+.cover {
+    aspect-ratio: 1512 / 770;
+    overflow: hidden;
+    background: #eee;   /* поки вантажиться */
+}
+.cover img,
+.cover video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Підпис кейсу: смуга 30px по нижньому краю, вкладки праворуч
+   з полем 50px (Case-name: px-50, justify-end). */
+.case-name {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--tab-h);
+    padding: 0 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+
+/* ═══ СТОРІНКА КЕЙСУ: ПРО ПРОЄКТ ═══
+   About case: сітка на 4 колонки. Опис (About) займає перші дві,
+   With — третю, Services — четверту. У кожному блоці підпис, під ним
+   через 40 вміст. Назва кейсу вже є у вкладці хедера, тож на сторінці
+   вона лише для читалок екрана й пошуковиків (h1 .sr-only). */
+.about {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--grid-gap);
+    padding: var(--grid-pad);
+}
+
+.about-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--label-gap);
+    min-width: 0;
+}
+.about-desc     { grid-column: 1 / span 2; }
+.about-with     { grid-column: 3; }
+.about-services { grid-column: 4; }
+
+/* With і Services притиснуті до правого краю своєї колонки */
+.about-with,
+.about-services {
+    align-items: flex-end;
+    text-align: right;
+}
+
+/* Спільне для всіх текстів кейсу */
+.label, .lead, .big, .credits-list {
+    margin: 0;
+    letter-spacing: -0.02em;
+    font-feature-settings: var(--ff-text);
+}
+.lead p, .big p, .credits-list p { margin: 0; }
+
+/* Посилання посеред тексту: [слова](адреса) в info.txt.
+   Підкреслення як у «→ type.tkachenko.design»; при наведенні зникає. */
+.inline-link {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+    text-decoration-skip-ink: none;
+}
+.inline-link:hover { text-decoration: none; }
+
+/* Підписи About / With / Services */
+.label {
+    font-size: var(--label-fs);
+    line-height: 1.2;
+}
+
+/* Опис проєкту. Порожній рядок у info.txt — новий абзац. */
+.lead {
+    font-size: var(--lead-fs);
+    line-height: var(--lead-lh);
+}
+.lead p + p { margin-top: calc(var(--lead-lh) * 1em); }
+
+/* With, Services, назви команд: кожен рядок info.txt — новий рядок */
+.big {
+    font-size: var(--big-fs);
+    line-height: var(--big-lh);
+    font-weight: 500;
+}
+
+/* Services — чорні плашки як вкладки хедера (висота 30, жирний), але з прямими
+   кутами, одна під одною через 6. Вирівнювання — як у блока: праворуч, коли
+   Services стоїть в ряду з описом, ліворуч, коли під ним. */
+.service-list {
+    display: flex;
+    flex-direction: column;
+    align-items: inherit;
+    gap: var(--service-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.service { border-radius: 0; }
+
+/* Сховано з екрана, але читається читалками й пошуковиками */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+
+/* ═══ СТОРІНКА КЕЙСУ: ОБКЛАДИНКА ═══
+   Фіксований блок у пропорції з макета: 1512 × 600 (Cover у фреймі case),
+   на мобайлі 400 × 260 (Cover у case-mob). Масштабується з шириною екрана,
+   пропорція не міняється; картинка обрізається по центру. */
+.case-hero {
+    aspect-ratio: 1512 / 600;
+    overflow: hidden;
+    background: #eee;   /* поки вантажиться */
+}
+.case-hero img,
+.case-hero video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* ═══ СТОРІНКА КЕЙСУ: ГАЛЕРЕЯ ═══
+   Поля 10 ліворуч і праворуч (Frame 183: x 10, згори й знизу впритул),
+   10 між картинками. Висота кожної — за ВЛАСНОЮ
+   пропорцією картинки: жодних фіксованих блоків і жодного обрізання,
+   однаково на десктопі й на телефоні. */
+.gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gallery-gap);
+    padding: 0 var(--gallery-pad);
+}
+.gallery > img,
+.gallery > video {
+    width: 100%;
+    height: auto;
+}
+
+/* Ряд (тека всередині проєкту): картинки в одну лінію на всю ширину,
+   проміжок 10, висота в ряду однакова. Секрет — flex-grow = ширина / висота
+   картинки (його ставить build.py або site.js): тоді ширина кожної
+   пропорційна її пропорції, а висоти збігаються. Нічого не обрізається. */
+.gallery-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gallery-gap);
+}
+.gallery-row > img,
+.gallery-row > video {
+    flex: 1 1 0;
+    min-width: 0;
+    height: auto;
+}
+
+
+/* ═══ ГАЛЕРЕЯ: ГРУПИ З ПІДПИСОМ ═══ (фрейми case-logo / case-logo-mob)
+   Тека-ряд з info.txt. Перед кожною групою — лінія на ширину галереї
+   (відступ 10 від країв), 10 над нею й 10 під нею. Далі картинки в
+   одну лінію через 10, кожна у фіксованій пропорції 740 × 500,
+   обрізається по центру. Під ними підпис на сітці About: назва — у
+   колонках 1–2, опис — з 3-ї; 40 зверху й 40 знизу. */
+.gallery-group::before {
+    content: "";
+    display: block;
+    height: var(--group-line);
+    margin: var(--group-line-gap) 0;
+    background: currentColor;
+}
+/* Проміжок галереї перед групою гасимо — лінія стоїть рівно на 10
+   під підписом (40) попереднього блоку, а не на 10 + 10 */
+.gallery > .gallery-group:not(:first-child) {
+    margin-top: calc(-1 * var(--gallery-gap));
+}
+
+.group-cells {
+    display: flex;
+    gap: var(--gallery-gap);
+}
+.group-cells > img,
+.group-cells > video {
+    flex: 1 1 0;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: var(--group-ratio);
+    object-fit: cover;
+}
+
+/* Лівий край — на лінії тексту About: 10 поле галереї + 30 = 40 */
+.group-caption {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    column-gap: var(--grid-gap);
+    row-gap: var(--group-text-gap);
+    padding: var(--group-cap-top) calc(var(--grid-pad) - var(--gallery-pad)) var(--group-cap-bottom);
+}
+.group-title { grid-column: 1 / span 2; }
+.group-text  { grid-column: 3 / span 2; max-width: 640px; }
+
+/* Опис групи — кегль та інтерліньяж як в описі проєкту вгорі кейсу,
+   між абзацами — 10 (--group-para-gap) */
+.group-text {
+    font-size: var(--lead-fs);
+    line-height: var(--lead-lh);
+}
+.group-text p { margin: 0; }
+.group-text p + p { margin-top: var(--group-para-gap); }
+
+
+/* ═══ КРЕДИТИ ═══
+   Та сама сітка, що й About case: 4 колонки, крок 40, p 40.
+   Кожна команда — колонка; пʼята переноситься на новий ряд.
+   У колонці — назва команди, під нею через 30 список ролей. */
+.credits {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    padding: var(--grid-pad);
+    background: #fff;
+    color: #000;
+}
+
+.credits-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--col-gap);
+    min-width: 0;
+}
+
+/* Ролі — рядок за рядком, без проміжків */
+.credits-list {
+    font-size: var(--credits-fs);
+    line-height: var(--credits-lh);
+}
+
+
+/* ═══ ВУЗЬКИЙ ДЕСКТОП / ПЛАНШЕТ ═══
+   На 4 колонки тут уже тісно — лишаємо 2: опис на всю ширину,
+   під ним With і Services поруч; команди — по дві в ряд. */
+@media (max-width: 1100px) {
+    .about, .credits  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .about-desc       { grid-column: 1 / -1; }
+    .about-with       { grid-column: 1; }
+    .about-services   { grid-column: 2; }
+    /* Під описом With і Services — ліворуч, як на телефоні */
+    .about-with,
+    .about-services   { align-items: flex-start; text-align: left; }
+}
+
+
+/* ═══ ФУТЕР ═══
+   Чорний, білий текст, 30px, px-10, space-between. Соцмережі через 10px. Regular 15. */
+.ftr {
+    box-sizing: border-box;
+    height: var(--tab-h);
+    padding: 0 var(--edge);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #000;
+    color: #fff;
+    font-size: var(--tab-fs);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* На чорному футері чорна рамка фокусу не видна — робимо білою */
+.ftr a:focus-visible { outline-color: #fff; }
+
+.ftr-socials {
+    display: flex;
+    align-items: center;
+    gap: var(--socials-gap);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   МОБАЙЛ — фрейми main-mob і case-mob (400px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 760px) {
+    :root {
+        --tab-fs: 12px;         /* вкладки й футер: 12 */
+
+        /* Мобільного макета кейсу під нову верстку ще немає —
+           поля й кеглі поки зменшені за старим case-mob */
+        --grid-pad: 30px;
+        --grid-gap: 30px;
+        --label-gap: 20px;
+        --col-gap: 20px;
+
+        --label-fs: 12px;
+        --lead-fs: 14px;
+        --big-fs: 20px;
+        --credits-fs: 12px;
+
+
+        --socials-gap: 6px;     /* Frame 177: gap-6 */
+    }
+
+    /* ── Хедер головної (main-mob) ──
+       Логотип і «→ type» ліворуч, знак праворуч. */
+    .hdr-left { flex: none; min-width: 0; }
+    .full  { display: none; }
+    .short { display: block; }
+
+    /* ── Хедер кейсу (case-mob) ──
+       Лише БІЛА вкладка з назвою кейсу ліворуч і знак праворуч.
+       Логотипа й типу проєкту тут немає — на головну веде знак. */
+    .hdr--case .hdr-left  { display: none; }
+    .hdr--case .tab--type { display: none; }
+    .hdr--case .tab--name { background: #fff; color: #000; }
+
+    /* ── Обкладинки ──
+       На головній висота фіксована 270.68 (Case-cover).
+       На сторінці кейсу — пропорція 400 × 260 (Cover у case-mob).
+       В обох картинка обрізається по центру; галерея — ні. */
+    .cover      { aspect-ratio: auto; height: 270.68px; }
+    .case-hero  { aspect-ratio: 400 / 260; }
+
+    /* Підпис кейсу — праворуч, з тим самим полем, що й знак у хедері (--edge) */
+    .case-name { justify-content: flex-end; padding: 0 var(--edge); }
+
+    /* Нагороди на телефоні — лише іконка: підпис не вміщається поруч із назвою */
+    .case-awards { left: var(--edge); }
+    .tab--award .award-text { display: none; }
+    .tab--award { padding: 0 5px; }
+
+    /* ── Про проєкт і кредити ── усе стовпчиком */
+    .about, .credits  { grid-template-columns: 1fr; }
+    .about-desc,
+    .about-with,
+    .about-services   { grid-column: 1; }
+
+    /* ── Сторінка з групами (case-logo-mob) ──
+       На відміну від інших кейсів картинки групи стають у стовпчик через 10,
+       назва й опис — одне під одним через 40. Поля About і підписів — 40,
+       між описом і Services — 40, підпис → вміст — 20. */
+    .case--logo {
+        --grid-pad: 40px;
+        --grid-gap: 40px;
+        --label-gap: 20px;
+    }
+    .group-cells      { flex-direction: column; }
+    .group-cells > img,
+    .group-cells > video { flex: none; width: 100%; }
+    .group-caption    { grid-template-columns: 1fr; }
+    .group-title,
+    .group-text       { grid-column: 1; }
+
+    /* ── Футер ──
+       Лише соцмережі ліворуч і пошта праворуч — назви сайту немає.
+       Висота 30; на зовсім вузьких екранах (менше ~370px) рядок
+       переноситься, а не вилазить за край. */
+    .ftr-name { display: none; }
+    .ftr {
+        height: auto;
+        min-height: var(--tab-h);
+        padding: 9px var(--edge);
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+}
