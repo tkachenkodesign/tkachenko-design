@@ -151,7 +151,8 @@ a:focus-visible {
 .award-accent  { color: var(--award-accent, currentColor); }
 .award--reddot { --award-accent: #e0001b; }
 
-/* Повна адреса магазину — на десктопі, коротка «→ type» — на мобайлі */
+/* Повна адреса магазину й назви соцмереж — на десктопі,
+   короткі «→ type», «inst.», «be.», «li.» — на мобайлі */
 .short { display: none; }
 
 
@@ -523,6 +524,10 @@ a:focus-visible {
 
 
         --socials-gap: 6px;     /* Frame 177: gap-6 */
+
+        --gallery-pad: 4px;     /* галерея кейсу на телефоні: поля від країв */
+        --gallery-gap: 4px;     /* …і проміжки між картинками та блоками */
+        --group-line-gap: 4px;  /* над і під лінією перед групою з підписом */
     }
 
     /* ── Хедер головної (main-mob) ──
